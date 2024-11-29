@@ -10,15 +10,17 @@ if [[ -d $X ]]; then
 
 	fastas=$(find $X -type f -name "*.fa" -or -name "*.fasta")
 	echo "#####START OF THE REPORT#####"
+	echo
+	
 	#Ensuring that there are fasta files in the variable fastas
 	if [[ -n $fastas ]]; then
-
-		echo '#####Reporting number of files#####'
-		echo There are $(find $X -type f -name "*.fa" -or -name "*.fasta" | wc -l) fasta files in $X folder and subfolders.
+		
+		echo '####NUMBER OF FILES####'
+		([ $(find $X -type f -name "*.fa" -or -name "*.fasta" | wc -l) -gt 1 ] && echo There are $(find $X -type f -name "*.fa" -or -name "*.fasta" | wc -l) fasta files in $X folder and subfolders.) || echo There is 1 fasta file in $X folder and subfolders.
 		echo
 			
-		echo '#####Reporting number of unique fasta IDs#####'
-		echo There are $(grep "^>" $fastas | awk '{print $1}' | sort | uniq | wc -l) unique fasta IDs.
+		echo '####NUMBER OF UNIQUE FASTA IDS####'
+		([ $(grep "^>" $fastas | awk '{print $1}' | sort | uniq | wc -l) -gt 1 ] && echo There are $(grep "^>" $fastas | awk '{print $1}' | sort | uniq | wc -l) unique fasta IDs.) || echo There is only 1 unique fasta ID.
 		echo
 			
 		echo '#####Starting report on all fasta files found#####'
@@ -29,7 +31,7 @@ if [[ -d $X ]]; then
 				if [[ -s $i ]]; then
 				
 					#Label the header differentiating between protein and nucleotide fasta files
-					grep -v "^>" $i | sed 's/[- \n]//g' | ( grep -q [RDEQHILKMFPSWYV]  && echo "###fasta.protein.file==================$i###") || echo "###fasta.nucleotide.file==================$i###"
+					grep -v "^>" $i | sed 's/[- \n]//g' | ( grep -q [RDEQHILKMFPSWYV]  && echo "###FASTA PROTEIN FILE=$i###") || echo "###FASTA NUCLEOTIDE FILE=$i###"
 					echo
 					
 					#Classify between symlinks or regular files
@@ -47,12 +49,12 @@ if [[ -d $X ]]; then
 					([ $(cat $i | wc -l) -le $((2*$N)) ] && cat $i) || head -n $N $i; echo ...; tail -n $N $i
 					echo
 					fi
-		###WARNINGS section		
-				else echo "###fasta.file==================$i###"; echo WARNING:$i IS AN EMPTY FASTA FILE!!!
+		###WARNINGS/ERRORS section		
+				else echo "###FASTA FILE=$i###"; echo; echo WARNING:$i IS AN EMPTY FASTA FILE!!!
 					echo
 				fi
 				
-			else echo echo "###fasta.file==================$i###"; WARNING: $i HAS NO READ PERMISSIONS!!!
+			else echo echo "###FASTA FILE=$i###"; echo; echo WARNING: $i HAS NO READ PERMISSIONS!!!
 				echo
 			fi
 		done
@@ -62,7 +64,7 @@ if [[ -d $X ]]; then
 	
 	echo "#####END OF THE REPORT#####"
 	
-else echo WARNING: THE FOLDER DOES NOT EXIST!!!
+else echo ERROR: THE FOLDER DOES NOT EXIST!!!
 fi
 
 
