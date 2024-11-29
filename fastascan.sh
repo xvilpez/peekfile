@@ -54,7 +54,7 @@ if [[ -d $X ]]; then
 					echo
 				fi
 				
-			else echo echo "###FASTA FILE=$i###"; echo; echo WARNING: $i HAS NO READ PERMISSIONS!!!
+			else echo "###FASTA FILE=$i###"; echo; echo WARNING: $i HAS NO READ PERMISSIONS!!!
 				echo
 			fi
 		done
